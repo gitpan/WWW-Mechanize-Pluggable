@@ -1,6 +1,6 @@
 use warnings;
 use strict;
-use Test::More tests => 8;
+use Test::More tests => 11;
 
 use lib 't/local';
 use LocalServer;
@@ -24,3 +24,9 @@ $mech->mech->_push_page_stack();
 is(scalar @{$mech->mech->{page_stack}}, 1, "Pushed item onto page stack");
 $mech->mech->_push_page_stack();
 is(scalar @{$mech->mech->{page_stack}}, 2, "Pushed item onto page stack");
+$mech->back();
+is(scalar @{$mech->mech->{page_stack}}, 1, "Popped item from page stack");
+$mech->back();
+is(scalar @{$mech->mech->{page_stack}}, 0, "Popped item from page stack");
+$mech->back();
+is(scalar @{$mech->mech->{page_stack}}, 0, "Can't pop beyond end of page stack");

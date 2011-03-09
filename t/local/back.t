@@ -126,7 +126,7 @@ my @links = qw(
 
 is( scalar @{$mech->mech->{page_stack}}, 0, "Pre-404 check" );
 
-my $server404 = HTTP::Daemon->new or die;
+my $server404 = HTTP::Daemon->new or die "Can't create an HTTP::Daemon\n";
 my $server404url = $server404->url;
 $server404url =~ s{http://.*?:}{http://localhost:};
 
@@ -150,7 +150,15 @@ SKIP: {
         }
     }
     $mech->get($server404url);
-    is( $mech->status, 404 , "404 check");
+    if( $mech->status == 404 ) {
+        pass("404 check");
+    }
+    elsif ($mech->success and $mech->content =~ /search.dnsadvantage.com/) {
+        pass("404 but faked out by DNSadvantage");
+    }
+    else {
+        fail("did not 404 as expected");
+    }
 
     is( scalar @{$mech->mech->{page_stack}}, 1, "Even 404s get on the stack" );
 
@@ -173,5 +181,3 @@ SKIP: {
 
     memory_cycle_ok( $mech, "No memory cycles found" );
 }
-
-

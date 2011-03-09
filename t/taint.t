@@ -1,4 +1,4 @@
-#!perl -T
+#!perl 
 
 use warnings;
 use strict;
@@ -8,9 +8,11 @@ BEGIN {
     eval "use Test::Taint";
     ($^O) = ($^O =~ /.*/);
 
+($^O) = ($^O =~ /.*/);
+BEGIN {
+    eval "use Test::Taint";
     plan skip_all => "Test::Taint required for checking taintedness" if $@;
-
-    plan tests => 6;
+    plan tests=>6;
 }
 
 untainted_ok($^O);

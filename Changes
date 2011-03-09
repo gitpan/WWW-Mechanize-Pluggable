@@ -1,4 +1,7 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.07  Tue Mar  8 22:40:31 PST 2011
+	- Updated several tests to match current WWW::Mechanize API.
+	- Hard-coded requirement for minimum level of WWW::Mechanize.
 
 1.06  Fri May 21 14:19:22 PDT 2010
 	- fix local/back.t to always use a localhost URL

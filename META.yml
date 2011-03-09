@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:               WWW-Mechanize-Pluggable
-version:            1.06
-abstract:           A WWW::Mechanize that's custmomizable via plugins
+version:            1.07
+abstract:           make WWW::Mechanize customizable via plugins
 author:
     - Joe McMahon <mcmahon@yahoo-inc.com>
 license:            unknown
@@ -29,12 +29,12 @@ requires:
     URI:                  1.25
     URI::file:            0
     URI::URL:             0
-    WWW::Mechanize:       1.12
+    WWW::Mechanize:       1.66
 no_index:
     directory:
         - t
         - inc
-generated_by:       ExtUtils::MakeMaker version 6.55_02
+generated_by:       ExtUtils::MakeMaker version 6.56
 meta-spec:
     url:      http://module-build.sourceforge.net/META-spec-v1.4.html
     version:  1.4
