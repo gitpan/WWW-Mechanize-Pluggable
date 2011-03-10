@@ -1,7 +1,7 @@
 --- #YAML:1.0
 name:               WWW-Mechanize-Pluggable
-version:            1.07
-abstract:           make WWW::Mechanize customizable via plugins
+version:            1.08
+abstract:           A WWW::Mechanize that's custmomizable via plugins
 author:
     - Joe McMahon <mcmahon@yahoo-inc.com>
 license:            unknown
