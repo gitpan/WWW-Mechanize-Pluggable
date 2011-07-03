@@ -4,7 +4,6 @@ use File::Spec;
 use strict;
 
 # Essentially a clone of WWW::Mech's Makefile.PL.
-my $runlive = grep /--runlive/i, @ARGV;
 my $skiplocal = grep /--skiplocal/i, @ARGV;
 my $runtaint = grep /--runtaint/i, @ARGV;
 
@@ -20,46 +19,56 @@ else {
    You have disabled taint testing. You may want to 
    enable it if you need to be absolutely sure that 
    this module is secure.
-EOT
-}
-
-if ( $runlive ) {
-    require IO::Socket;
-    my $s = IO::Socket::INET->new(
-        PeerAddr => "www.google.com:80",
-        Timeout  => 10,
-    );
-    if ($s) {
-        close($s);
-        $runlive = 1;
-
-        print <<EOT;
-
-    You have enabled the live tests (run against Google). There's no guarantee
-    that they haven't changed something and broken these, so if these tests
-    fail, it may not be this module's fault.
 
 EOT
-    } else {
-        print <<EOT;
-
-    It seems that you are not directly connected to the Internet.  
-    of the WWW::Mechanize tests interact with websites such as Google,
-    in addition to its own internal tests.
-
-EOT
-
-        if ( prompt("Do you want to skip these tests?", "y") =~ /^y/i ) {
-            $runlive = 1;
-        }
-    } # failed connect
 }
 
 my @tests = glob File::Spec->catfile( 't', '*.t' );
 push( @tests, glob File::Spec->catfile( 't', 'local', '*.t' ) ) unless $skiplocal;
-push( @tests, glob File::Spec->catfile( 't', 'live', '*.t' ) ) if $runlive;
 push( @tests, glob File::Spec->catfile( 't', ($runtaint ? 'taint':'notaint'), '*.t' ) );
 
+# Verify that we don't have a "helpful" ISP that points you to a search
+# page or otherwise dorks with the proper functioning of the Internet.
+# 404 means "not found", not "here, let me sell you something".
+eval { require LWP::UserAgent; require HTTP::Request; require HTTP::Response };
+if ($@) {
+    print <<EOT;
+You don't seem to have the modules installed that will let us check if your
+ISP is one that replaces 404's with a "search page". Some of the tests that 
+expect real "page not found" statuses may fail if your ISP does this.
+
+EOT
+      push( @tests, glob File::Spec->catfile( 't', 'normal_ISP', '*.t' ) );
+}
+else {
+  my $ua = LWP::UserAgent->new;
+  $ua->agent("MyApp/0.1 ");
+
+  # Create a request
+  my $req = HTTP::Request->new(POST => 'http://nfrenjfirefreknfjnr.com/no-exist.html');
+  $req->content_type('application/x-www-form-urlencoded');
+  $req->content('query=libwww-perl&mode=dist');
+
+  # Pass request to the user agent and get a response back
+  my $res = $ua->request($req);
+
+  # Check the outcome of the response
+  if ($res->code == 404) {
+      push( @tests, glob File::Spec->catfile( 't', 'normal_ISP', '*.t' ) );
+      print <<EOT;
+Your ISP is civilized and respects a proper 404.
+EOT
+  }
+  else {
+      push( @tests, glob File::Spec->catfile( 't', 'helpful_ISP', '*.t' ) );
+      print <<EOT;
+You have an uncivilized "helpful" ISP that substitutes a page for 404s. 
+We'll work around that.
+EOT
+  }
+}
+
+my @missing;
 my $parms = {
     'NAME'          => 'WWW::Mechanize::Pluggable',
     'VERSION_FROM'  => 'lib/WWW/Mechanize/Pluggable.pm', # finds $VERSION
@@ -75,7 +84,7 @@ my $parms = {
         'HTTP::Daemon'      => 0,
         'HTTP::Request'     => 1.30,
         'HTTP::Status'      => 0,
-        'LWP'               => 5.76,
+        'LWP'               => 6.00,
         'LWP::UserAgent'    => 2.024,
         'Module::Pluggable' => 0,
         'Test::More'        => 0.34,
@@ -100,7 +109,6 @@ You will not be able to process https:// URLs correctly.
 EOT
 }
 
-my @missing;
 my @nice = qw( Test::Pod Test::Memory::Cycle Test::Warn );
 for my $nice ( @nice ) {
     eval "require $nice";
