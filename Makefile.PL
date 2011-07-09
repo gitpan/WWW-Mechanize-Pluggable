@@ -12,6 +12,7 @@ WriteMakefile(
         'HTML::Form'        => 1.038,
         'HTML::HeadParser'  => 0,
         'HTML::TokeParser'  => 2.28,
+        'HTTP::Cookies'     => 0,
         'HTTP::Daemon'      => 0,
         'HTTP::Request'     => 1.30,
         'HTTP::Status'      => 0,

@@ -1,4 +1,7 @@
 Revision history for Perl module WWW::Mechanize::Pluggable
+1.12  Fri Jul  8 22:57:10 PDT 2011
+	- Update prereqs: add HTTP::Cookies
+
 1.11  Wed Jul  6 21:17:48 PDT 2011
 	- clone.t shouldn't be run with taint on
         - reduced tests to the ones that actually test this code, not Mech's
